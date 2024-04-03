@@ -23,6 +23,10 @@ PYBIND11_MODULE( flowpycpp, m )
     xt::import_numpy();
     m.doc() = "Python bindings for flowy"; // optional module docstring
 
+    py::class_<std::filesystem::path>( m, "Path" ).def( py::init<std::string>() );
+
+    py::implicitly_convertible<std::string, std::filesystem::path>();
+
     py::class_<Flowy::AscCrop>( m, "AscCrop" )
         .def( py::init<>() )
         .def_readwrite( "x_min", &Flowy::AscCrop::x_min )
@@ -86,8 +90,8 @@ PYBIND11_MODULE( flowpycpp, m )
         .def( py::init<>() )
         .def_readwrite( "output_folder", &Flowy::Config::InputParams::output_folder )
         .def_readwrite( "run_name", &Flowy::Config::InputParams::run_name )
-        .def_readwrite( "path", &Flowy::Config::InputParams::source )
-        .def_readwrite( "", &Flowy::Config::InputParams::vent_coordinates )
+        .def_readwrite( "source", &Flowy::Config::InputParams::source )
+        .def_readwrite( "vent_coordinates", &Flowy::Config::InputParams::vent_coordinates )
         .def_readwrite( "save_hazard_data", &Flowy::Config::InputParams::save_hazard_data )
         .def_readwrite( "n_flows", &Flowy::Config::InputParams::n_flows )
         .def_readwrite( "n_lobes", &Flowy::Config::InputParams::n_lobes )
@@ -130,5 +134,25 @@ PYBIND11_MODULE( flowpycpp, m )
         .def_readwrite( "restart_files", &Flowy::Config::InputParams::restart_files )
         .def_readwrite( "restart_filling_parameters", &Flowy::Config::InputParams::restart_filling_parameters );
 
-    // py::class_<Flowy::Simulation>(m, "Simulation")
+    py::class_<Flowy::CommonLobeDimensions>( m, "CommonLobeDimensions" )
+        .def( py::init<>() )
+        .def_readwrite( "avg_lobe_thickness", &Flowy::CommonLobeDimensions::avg_lobe_thickness )
+        .def_readwrite( "lobe_area", &Flowy::CommonLobeDimensions::lobe_area )
+        .def_readwrite( "max_semiaxis", &Flowy::CommonLobeDimensions::max_semiaxis )
+        .def_readwrite( "max_cells", &Flowy::CommonLobeDimensions::max_cells )
+        .def_readwrite( "thickness_min", &Flowy::CommonLobeDimensions::thickness_min );
+
+    py::class_<Flowy::Simulation>( m, "Simulation" )
+        .def( py::init<Flowy::Config::InputParams, std::optional<int>>() )
+        .def_readwrite( "input", &Flowy::Simulation::input )
+        .def_readwrite( "asc_file", &Flowy::Simulation::asc_file )
+        .def_readwrite( "topography", &Flowy::Simulation::topography )
+        .def_readwrite( "lobes", &Flowy::Simulation::lobes )
+        .def( "compute_initial_lobe_position", &Flowy::Simulation::compute_initial_lobe_position )
+        .def( "compute_lobe_axes", &Flowy::Simulation::compute_lobe_axes )
+        .def( "compute_descendent_lobe_position", &Flowy::Simulation::compute_descendent_lobe_position )
+        .def( "perturb_lobe_angle", &Flowy::Simulation::perturb_lobe_angle )
+        .def( "select_parent_lobe", &Flowy::Simulation::select_parent_lobe )
+        .def( "add_inertial_contribution", &Flowy::Simulation::add_inertial_contribution )
+        .def( "run", &Flowy::Simulation::run );
 }
