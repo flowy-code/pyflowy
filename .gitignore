@@ -1,6 +1,7 @@
 .cache/
 build/
 subprojects/*/
+subprojects/pdf_cpplib.wrap
 
 pdm.lock
 compile_commands.json
