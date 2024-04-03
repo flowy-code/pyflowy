@@ -1,3 +1,10 @@
+.cache/
+build/
+subprojects/*/
+
+pdm.lock
+compile_commands.json
+
 # Prerequisites
 *.d
 

@@ -1,0 +1,5 @@
+[wrap-git]
+directory=flowy
+url=https://github.com/flowy-code/flowy.git
+revision = head
+depth = 1

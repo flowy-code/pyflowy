@@ -1,0 +1,21 @@
+[tool.pdm]
+
+[project]
+name = "flowpy"
+version = "0.0.1"
+description = "Python bindings for flowy"
+authors = [
+    {name = "Amrita Goswami", email = "amrita16thaug646@gmail.com"},
+    {name = "Moritz Sallermann", email = "moritzsallermann@gmail.com"},
+
+]
+
+dependencies = []
+requires-python = ">=3.9"
+readme = "README.md"
+license = {text = "GPL v3"}
+
+[build-system]
+requires = ["pybind11", "meson-python"]
+build-backend = "mesonpy"
+# Important, tells pip how to install the package
