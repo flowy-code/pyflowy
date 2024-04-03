@@ -13,5 +13,6 @@ dependencies:
   - catch2
   - xtensor 
   - xtensor-blas
+  - xtensor-python
   - python
   - pybind11
