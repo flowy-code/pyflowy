@@ -2,13 +2,13 @@ import flowpy as fpy
 import numpy as np
 import matplotlib.pyplot as plt
 
-# print( fpy.flowpycpp.add(1,2) )
-
 lobe = fpy.flowpycpp.Lobe()
-lobe.semi_axes = [4, 2]
+lobe.semi_axes = [8, 2]
 lobe.thickness = 20.0
 lobe.set_azimuthal_angle(np.pi / 4)
 lobe.center = [20, 10]
+
+extent = lobe.extent_xy()
 
 perimeter = np.array(lobe.rasterize_perimeter(30))
 
@@ -30,13 +30,34 @@ budding_point = topography.find_preliminary_budding_point(lobe, 30)
 
 new_lobe = fpy.flowpycpp.Lobe()
 new_lobe.set_azimuthal_angle(0)
-new_lobe.semi_axes = [2, 3]
+new_lobe.thickness = 20
+new_lobe.center = [20, 10]
+new_lobe.semi_axes = [8, 2]
+new_lobe_perimeter = np.array(new_lobe.rasterize_perimeter(30))
+new_lobe_extent = new_lobe.extent_xy()
+
 
 topography.add_lobe(lobe)
+topography.add_lobe(new_lobe)
+
 
 plt.pcolormesh(x_data, y_data, topography.height_data.T)
+
+plt.axvline(lobe.center[0] + extent[0], color="black")
+plt.axvline(lobe.center[0] - extent[0], color="black")
+plt.axhline(lobe.center[1] + extent[1], color="black")
+plt.axhline(lobe.center[1] - extent[1], color="black")
+
+plt.axvline(new_lobe.center[0] + new_lobe_extent[0], color="white")
+plt.axvline(new_lobe.center[0] - new_lobe_extent[0], color="white")
+plt.axhline(new_lobe.center[1] + new_lobe_extent[1], color="white")
+plt.axhline(new_lobe.center[1] - new_lobe_extent[1], color="white")
+
+
 plt.plot(budding_point[0], budding_point[1], marker="o", color="black", ms=12)
 
 plt.plot(perimeter[:, 0], perimeter[:, 1], color="black")
+plt.plot(new_lobe_perimeter[:, 0], new_lobe_perimeter[:, 1], color="white")
+
 plt.gca().set_box_aspect(1)
 plt.show()
