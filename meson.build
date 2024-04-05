@@ -4,18 +4,27 @@ project('flowpy', 'cpp',
 args = []
 deps = []
 
+cppc = meson.get_compiler('cpp')
+
 flowy_proj = subproject('flowy')
 flowylib = flowy_proj.get_variable('flowylib_dep')
 deps += [flowylib]
 
-py_mod = import('python')
-py = py_mod.find_installation(pure: false)
+py = import('python').find_installation('python', modules: ['numpy'])
+deps += py.dependency()
+
+# NumPy dependency
+incdir_numpy = run_command(py,
+  ['-c', 'import os; os.chdir(".."); import numpy; print(numpy.get_include())'],
+  check : true
+).stdout().strip()
+inc_np = include_directories(incdir_numpy)
+deps += declare_dependency(include_directories: inc_np)
 
 pyb11_dep = [
   py.dependency(),
   dependency('pybind11')
 ]
-
 deps += [pyb11_dep]
 
 # for the bindings
@@ -24,6 +33,7 @@ py.extension_module(
   sources : [
     'python_bindings/bindings.cpp'
   ],
+  include_directories: inc_np,
   dependencies: deps,
   cpp_args : args,
   install: true,

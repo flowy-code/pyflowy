@@ -6,12 +6,15 @@
 #include "topography.hpp"
 
 #define PYBIND11_DETAILED_ERROR_MESSAGES
-#include "xtensor-python/pyarray.hpp"
 
 // Bindings
 #include <pybind11/operators.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+
+// xtensor extensions
+#define FORCE_IMPORT_ARRAY
+#include "xtensor-python/pyarray.hpp"
 
 // Namespaces
 using namespace std::string_literals; // For ""s
