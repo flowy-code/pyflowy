@@ -24,8 +24,12 @@ def compute_lobe_axes( lobe, slope, input, lobe_dimensions ):
 # Input parameters (we just construct this here)
 input = fpy.flowpycpp.InputParams()
 input.source = "file.asc"
-input.total_volume = 1
+input.total_volume = 20
 input.prescribed_avg_lobe_thickness = 1
+# Required for calculating the lobe_area
+input.n_flows = 1
+input.min_n_lobes = 1
+input.max_n_lobes = 1
 # For perturb angle and inertial contribution
 input.max_slope_prob = 1  # 0.5
 input.inertial_exponent = 0.0
@@ -44,8 +48,8 @@ height_data = np.array(
 )
 topography = fpy.flowpycpp.Topography(height_data, x_data, y_data)
 simulation.topography = topography
-lobe_dimensions = fpy.flowpycpp.CommonLobeDimensions
-lobe_dimensions.lobe_area = 20.0
+print("avg lobe thickness", simulation.lobe_dimensions.avg_lobe_thickness)
+print("Lobe area ",simulation.lobe_dimensions.lobe_area)
 
 
 # Parent lobe
@@ -78,9 +82,9 @@ final_budding_point = 2.0*parent_lobe.center - parent_lobe.point_at_angle( angle
 height_budding_point, slope_budding_point = topography.height_and_slope( final_budding_point )
 print("Azimuthal angle of the descendent in pi ", descendent_lobe.get_azimuthal_angle()/np.pi)
 # Compute the lobe axes and center of the new descendent lobe
-# simulation.compute_lobe_axes( descendent_lobe, slope_budding_point ) # Somehow this is buggy???
-major_axis, minor_axis = compute_lobe_axes( descendent_lobe, slope_budding_point, input, lobe_dimensions )
-descendent_lobe.semi_axes = [major_axis, minor_axis]
+simulation.compute_lobe_axes( descendent_lobe, slope_budding_point ) # Somehow this is buggy???
+# major_axis, minor_axis = compute_lobe_axes( descendent_lobe, slope_budding_point, input, lobe_dimensions )
+# descendent_lobe.semi_axes = [major_axis, minor_axis]
 print("Axes = ", descendent_lobe.semi_axes)
 # Compute the final descendent center 
 new_lobe_center = compute_descendent_lobe_position( descendent_lobe, parent_lobe, final_budding_point )
