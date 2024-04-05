@@ -16,3 +16,4 @@ dependencies:
   - xtensor-python
   - python
   - pybind11
+  - matplotlib
