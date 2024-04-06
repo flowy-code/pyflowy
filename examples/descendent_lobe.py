@@ -74,8 +74,8 @@ simulation.perturb_lobe_angle(descendent_lobe, slope_parent_center) # This shoul
 
 simulation.add_inertial_contribution( descendent_lobe, parent_lobe, slope_parent_center )
 
-angle_diff = parent_lobe.get_azimuthal_angle() - descendent_lobe.get_azimuthal_angle()
-final_budding_point = 2.0*parent_lobe.center - parent_lobe.point_at_angle( angle_diff )
+angle_diff             = parent_lobe.get_azimuthal_angle() - descendent_lobe.get_azimuthal_angle()
+final_budding_point = parent_lobe.point_at_angle( np.pi - angle_diff )
 height_budding_point, slope_budding_point = topography.height_and_slope( final_budding_point )
 print("Azimuthal angle of the descendent in pi ", descendent_lobe.get_azimuthal_angle()/np.pi)
 # Compute the lobe axes and center of the new descendent lobe
