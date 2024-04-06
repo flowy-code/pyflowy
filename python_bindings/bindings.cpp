@@ -47,7 +47,7 @@ PYBIND11_MODULE( flowpycpp, m )
         .def_readwrite( "no_data_value", &Flowy::AscFile::no_data_value )
         .def_readwrite( "height_data", &Flowy::AscFile::height_data )
         .def_readwrite( "x_data", &Flowy::AscFile::x_data )
-        .def_readwrite( "x_data", &Flowy::AscFile::x_data );
+        .def_readwrite( "y_data", &Flowy::AscFile::y_data );
 
     py::class_<Flowy::Lobe>( m, "Lobe" )
         .def( py::init<>() )
