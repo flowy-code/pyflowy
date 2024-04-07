@@ -84,7 +84,8 @@ PYBIND11_MODULE( flowpycpp, m )
         .def( "add_lobe", &Flowy::Topography::add_lobe )
         .def( "is_point_near_boundary", &Flowy::Topography::is_point_near_boundary )
         .def( "locate_point", &Flowy::Topography::locate_point )
-        .def( "find_preliminary_budding_point", &Flowy::Topography::find_preliminary_budding_point );
+        .def( "find_preliminary_budding_point", &Flowy::Topography::find_preliminary_budding_point )
+        .def( "bounding_box", &Flowy::Topography::bounding_box );
 
     py::class_<Flowy::Topography::BoundingBox>( m, "TopographyBoundingBox" )
         .def( py::init<>() )
