@@ -48,3 +48,11 @@ py.install_sources([
   pure: false, # install next to compiled extension
   subdir: 'flowpy'
 )
+
+# Util 
+py.install_sources([
+    'flowpy/util.py',
+  ],
+  pure: false,
+  subdir: 'flowpy'
+)

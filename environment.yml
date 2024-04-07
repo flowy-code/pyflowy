@@ -17,3 +17,4 @@ dependencies:
   - python
   - pybind11
   - matplotlib
+  - requests

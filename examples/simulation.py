@@ -86,7 +86,8 @@ for idx_lobe in range(input.n_init, n_lobes):
     simulation.add_inertial_contribution( lobe_cur, lobe_parent, slope_parent )
 
     # Final budding point
-    final_budding_point = 2.0 * lobe_parent.center - lobe_parent.point_at_angle( lobe_cur.get_azimuthal_angle() )
+    angle_diff             = lobe_parent.get_azimuthal_angle() - lobe_cur.get_azimuthal_angle()
+    final_budding_point = lobe_parent.point_at_angle( - angle_diff )
     budding_point_list.append(final_budding_point)
     height_budding_point, slope_budding_point = topography.height_and_slope( final_budding_point )
 
