@@ -1,7 +1,9 @@
 #include "asc_file.hpp"
 #include "config.hpp"
+#include "config_parser.hpp"
 #include "definitions.hpp"
 #include "lobe.hpp"
+#include "pybind11/pytypes.h"
 #include "simulation.hpp"
 #include "topography.hpp"
 
@@ -11,6 +13,7 @@
 #include <pybind11/operators.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include <pybind11/stl/filesystem.h>
 
 // xtensor extensions
 #define FORCE_IMPORT_ARRAY
@@ -39,7 +42,7 @@ PYBIND11_MODULE( flowpycpp, m )
 
     py::class_<Flowy::AscFile>( m, "AscFile" )
         .def( py::init<>() )
-        .def( py::init<std::filesystem::path>() )
+        .def( py::init<std::filesystem::path>(), "file_path"_a )
         .def( py::init<std::filesystem::path, Flowy::AscCrop>() )
         .def( "save", &Flowy::AscFile::save )
         .def_readwrite( "lower_left_corner", &Flowy::AscFile::lower_left_corner )
@@ -162,4 +165,8 @@ PYBIND11_MODULE( flowpycpp, m )
         .def( "add_inertial_contribution", &Flowy::Simulation::add_inertial_contribution )
         .def( "stop_condition", &Flowy::Simulation::stop_condition )
         .def( "run", &Flowy::Simulation::run );
+
+    m.def(
+        "parse_config", &Flowy::Config::parse_config, "A function to parse input settings from a TOML file.",
+        "config_path"_a );
 }
