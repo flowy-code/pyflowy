@@ -3,10 +3,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 lobe = fpy.flowpycpp.Lobe()
-lobe.semi_axes = [8, 2]
+lobe.semi_axes = [1-1e-14, 1-1e-14]
 lobe.thickness = 20.0
-lobe.set_azimuthal_angle(np.pi / 4)
-lobe.center = [20, 10]
+lobe.set_azimuthal_angle(0)
+lobe.center = [0, 0]
+
 
 
 def add_cell(idx_x, idx_y, height_data, frac):
@@ -16,11 +17,10 @@ def add_cell(idx_x, idx_y, height_data, frac):
 extent = lobe.extent_xy()
 perimeter = np.array(lobe.rasterize_perimeter(2048))
 
+x_data      = np.arange( -3, 3, 1.0 )
+y_data      = np.arange( -3, 3, 1.0 )
 
-x_data = np.linspace(0, 40, 40, endpoint=False)
-y_data = np.linspace(0, 20, 20, endpoint=False)
 height_data = np.zeros(shape=(len(x_data), len(y_data)))
-height_data = np.array([[0 for j in range(len(y_data))] for i in range(len(x_data))])
 topography = fpy.flowpycpp.Topography(height_data, x_data, y_data)
 
 
