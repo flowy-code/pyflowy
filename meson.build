@@ -6,8 +6,14 @@ deps = []
 
 cppc = meson.get_compiler('cpp')
 
-flowy_proj = subproject('flowy')
-flowylib = flowy_proj.get_variable('flowylib_dep')
+flowy_proj = subproject('flowy', default_options : 
+[
+'build_tests=false',
+'build_shared_lib=true',
+'build_exe=false',
+])
+
+flowylib = flowy_proj.get_variable('flowylib_shared_dep')
 deps += [flowylib]
 
 py = import('python').find_installation('python', modules: ['numpy'])
@@ -39,7 +45,6 @@ py.extension_module(
   install: true,
   subdir: 'flowpy/'
 )
-
 
 # flowpy main package
 py.install_sources([
