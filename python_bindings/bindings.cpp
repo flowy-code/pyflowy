@@ -1,11 +1,11 @@
-#include "include/asc_file.hpp"
-#include "include/config.hpp"
-#include "include/config_parser.hpp"
-#include "include/definitions.hpp"
-#include "include/lobe.hpp"
+#include "flowy/include/asc_file.hpp"
+#include "flowy/include/config.hpp"
+#include "flowy/include/config_parser.hpp"
+#include "flowy/include/definitions.hpp"
+#include "flowy/include/lobe.hpp"
 #include "pybind11/pytypes.h"
-#include "include/simulation.hpp"
-#include "include/topography.hpp"
+#include "flowy/include/simulation.hpp"
+#include "flowy/include/topography.hpp"
 
 #define PYBIND11_DETAILED_ERROR_MESSAGES
 
