@@ -1,11 +1,11 @@
-#include "asc_file.hpp"
-#include "config.hpp"
-#include "config_parser.hpp"
-#include "definitions.hpp"
-#include "lobe.hpp"
+#include "include/asc_file.hpp"
+#include "include/config.hpp"
+#include "include/config_parser.hpp"
+#include "include/definitions.hpp"
+#include "include/lobe.hpp"
 #include "pybind11/pytypes.h"
-#include "simulation.hpp"
-#include "topography.hpp"
+#include "include/simulation.hpp"
+#include "include/topography.hpp"
 
 #define PYBIND11_DETAILED_ERROR_MESSAGES
 
