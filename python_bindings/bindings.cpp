@@ -71,6 +71,11 @@ PYBIND11_MODULE( flowpycpp, m )
         .def( "point_at_angle", &Flowy::Lobe::point_at_angle )
         .def( "rasterize_perimeter", &Flowy::Lobe::rasterize_perimeter );
 
+    py::class_<Flowy::LobeCells>(m, "LobeCells")
+        .def(py::init<>())
+        .def_readwrite( "cells_enclosed", &Flowy::LobeCells::cells_enclosed )
+        .def_readwrite( "cells_intersecting", &Flowy::LobeCells::cells_intersecting);
+
     py::class_<Flowy::Topography>( m, "Topography" )
         .def( py::init<>() )
         .def( py::init<Flowy::MatrixX, Flowy::VectorX, Flowy::VectorX>() )
@@ -78,6 +83,8 @@ PYBIND11_MODULE( flowpycpp, m )
         .def_readwrite( "x_data", &Flowy::Topography::x_data )
         .def_readwrite( "y_data", &Flowy::Topography::y_data )
         .def( "cell_size", &Flowy::Topography::cell_size )
+        .def( "volume", &Flowy::Topography::volume )
+        .def( "area", &Flowy::Topography::area )
         .def( "height_and_slope", &Flowy::Topography::height_and_slope )
         .def( "get_cells_intersecting_lobe", &Flowy::Topography::get_cells_intersecting_lobe )
         .def( "compute_intersection", &Flowy::Topography::compute_intersection )
