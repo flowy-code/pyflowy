@@ -18,7 +18,8 @@ micromamba install xtensor-python
 Please note, that you will need to delete directories downloaded by `meson` if you want to pull the latest commits of the dependencies. Please do not delete the wrap file for `flowy`. Here's what you should do:
 ```bash
 micromamba activate flowpyenv
-rm -rf subprojects/pdf_cpplib.wrap subprojects/flowy
+rm -rf subprojects 
+git restore subprojects
 meson setup build --wipe
 pip install .
 ```
