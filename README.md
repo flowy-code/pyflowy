@@ -21,5 +21,5 @@ micromamba activate flowpyenv
 rm -rf subprojects 
 git restore subprojects
 meson setup build --wipe
-pip install .
+pip install -e . --no-build-isolation
 ```
