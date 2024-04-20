@@ -3,9 +3,9 @@
 #include "flowy/include/config_parser.hpp"
 #include "flowy/include/definitions.hpp"
 #include "flowy/include/lobe.hpp"
-#include "pybind11/pytypes.h"
 #include "flowy/include/simulation.hpp"
 #include "flowy/include/topography.hpp"
+#include "pybind11/pytypes.h"
 
 #define PYBIND11_DETAILED_ERROR_MESSAGES
 
@@ -70,6 +70,11 @@ PYBIND11_MODULE( flowpycpp, m )
         .def( "is_point_in_lobe", &Flowy::Lobe::is_point_in_lobe )
         .def( "point_at_angle", &Flowy::Lobe::point_at_angle )
         .def( "rasterize_perimeter", &Flowy::Lobe::rasterize_perimeter );
+
+    py::class_<Flowy::LobeCells>( m, "LobeCells" )
+        .def( py::init<>() )
+        .def_readwrite( "cells_intersecting", &Flowy::LobeCells::cells_intersecting )
+        .def_readwrite( "cells_enclosed", &Flowy::LobeCells::cells_enclosed );
 
     py::class_<Flowy::Topography>( m, "Topography" )
         .def( py::init<>() )

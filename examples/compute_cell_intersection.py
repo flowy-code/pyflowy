@@ -8,13 +8,15 @@ lobe.thickness = 20.0
 lobe.set_azimuthal_angle(np.pi / 4)
 lobe.center = [20, 10]
 
-def add_lobe(lobe, topography):
-    height_data = np.zeros_like(topography.height_data)
-    cells_intersect, cells_enclosed = topography.get_cells_intersecting_lobe(lobe)
+def add_lobe(lobe, topography, height_data):
+    # height_data = np.zeros_like(topography.height_data)
+    lobecells = topography.get_cells_intersecting_lobe(lobe, None)
+    cells_intersect = lobecells.cells_intersecting
+    cells_enclosed = lobecells.cells_enclosed
     for c in cells_intersect:
-        height_data[c[0], c[1]] += 1
+        height_data[c[0], c[1]] += 15
     for c in cells_enclosed:
-        height_data[c[0], c[1]] += 2
+        height_data[c[0], c[1]] += 30
     return height_data
 
 extent = lobe.extent_xy()
@@ -26,7 +28,7 @@ y_data = np.linspace(0, 20, 20)
 height_data = np.zeros(shape=(len(x_data), len(y_data)))
 
 height_data = np.array(
-    [[0 for j in range(len(y_data))] for i in range(len(x_data))]
+    [[i + j for j in range(len(y_data))] for i in range(len(x_data))]
 )
 
 topography = fpy.flowpycpp.Topography(height_data, x_data, y_data)
@@ -34,10 +36,11 @@ topography = fpy.flowpycpp.Topography(height_data, x_data, y_data)
 bbox = topography.bounding_box(lobe.center, extent[0], extent[1])
 
 # "add" the lobe
-new_heights = add_lobe(lobe, topography)
+new_heights = add_lobe(lobe, topography, height_data)
 
 # Plot
 cell = topography.cell_size()
+# plt.pcolormesh(x_data+0.5*cell, y_data+0.5*cell, height_data.T)
 plt.pcolormesh(x_data+0.5*cell, y_data+0.5*cell, new_heights.T)
 plt.axvline(x_data[bbox.idx_x_lower], color="black")
 plt.axvline(x_data[bbox.idx_x_higher], color="black")

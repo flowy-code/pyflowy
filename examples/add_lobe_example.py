@@ -37,11 +37,11 @@ new_lobe_perimeter = np.array(new_lobe.rasterize_perimeter(30))
 new_lobe_extent = new_lobe.extent_xy()
 
 
-topography.add_lobe(lobe)
-topography.add_lobe(new_lobe)
+topography.add_lobe(lobe, None)
+topography.add_lobe(new_lobe, None)
 
-
-plt.pcolormesh(x_data, y_data, topography.height_data.T)
+cell = topography.cell_size()
+plt.pcolormesh(x_data+0.5*cell, y_data+0.5*cell, height_data.T)
 
 plt.axvline(lobe.center[0] + extent[0], color="black")
 plt.axvline(lobe.center[0] - extent[0], color="black")
