@@ -3,8 +3,10 @@
 #include "flowy/include/config_parser.hpp"
 #include "flowy/include/definitions.hpp"
 #include "flowy/include/lobe.hpp"
+#include "flowy/include/netcdf_file.hpp"
 #include "flowy/include/simulation.hpp"
 #include "flowy/include/topography.hpp"
+#include "flowy/include/topography_file.hpp"
 #include "pybind11/pytypes.h"
 
 #define PYBIND11_DETAILED_ERROR_MESSAGES
@@ -33,24 +35,32 @@ PYBIND11_MODULE( flowpycpp, m )
 
     py::implicitly_convertible<std::string, std::filesystem::path>();
 
-    py::class_<Flowy::AscCrop>( m, "AscCrop" )
+    py::class_<Flowy::TopographyCrop>( m, "TopographyCrop" )
         .def( py::init<>() )
-        .def_readwrite( "x_min", &Flowy::AscCrop::x_min )
-        .def_readwrite( "x_max", &Flowy::AscCrop::x_max )
-        .def_readwrite( "y_min", &Flowy::AscCrop::y_min )
-        .def_readwrite( "y_max", &Flowy::AscCrop::y_max );
+        .def_readwrite( "x_min", &Flowy::TopographyCrop::x_min )
+        .def_readwrite( "x_max", &Flowy::TopographyCrop::x_max )
+        .def_readwrite( "y_min", &Flowy::TopographyCrop::y_min )
+        .def_readwrite( "y_max", &Flowy::TopographyCrop::y_max );
+
+    py::enum_<Flowy::OutputQuantitiy>( m, "OutputQuantitiy" )
+        .value( "Hazard", Flowy::OutputQuantitiy::Hazard )
+        .value( "Height", Flowy::OutputQuantitiy::Height );
 
     py::class_<Flowy::AscFile>( m, "AscFile" )
         .def( py::init<>() )
+        .def( py::init<Flowy::Topography, Flowy::OutputQuantitiy>() )
         .def( py::init<std::filesystem::path>(), "file_path"_a )
-        .def( py::init<std::filesystem::path, Flowy::AscCrop>() )
+        .def( py::init<std::filesystem::path, Flowy::TopographyCrop>() )
         .def( "save", &Flowy::AscFile::save )
-        .def_readwrite( "lower_left_corner", &Flowy::AscFile::lower_left_corner )
-        .def_readwrite( "cell_size", &Flowy::AscFile::cell_size )
+        .def( "lower_left_corner", &Flowy::AscFile::lower_left_corner )
+        .def( "cell_size", &Flowy::AscFile::cell_size )
+        .def( "to_topography", &Flowy::AscFile::to_topography )
+        .def( "crop_to_content", &Flowy::AscFile::crop_to_content )
         .def_readwrite( "no_data_value", &Flowy::AscFile::no_data_value )
-        .def_readwrite( "height_data", &Flowy::AscFile::height_data )
+        .def_readwrite( "data", &Flowy::AscFile::data )
         .def_readwrite( "x_data", &Flowy::AscFile::x_data )
-        .def_readwrite( "y_data", &Flowy::AscFile::y_data );
+        .def_readwrite( "y_data", &Flowy::AscFile::y_data )
+        .def( "__repr__", []( const Flowy::AscFile & ) { return "<AscFile>"; } );
 
     py::class_<Flowy::Lobe>( m, "Lobe" )
         .def( py::init<>() )

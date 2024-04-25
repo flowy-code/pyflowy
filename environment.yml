@@ -18,3 +18,5 @@ dependencies:
   - pybind11
   - matplotlib
   - requests
+  - libnetcdf
+  - hdf5
