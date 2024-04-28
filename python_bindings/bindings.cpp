@@ -3,11 +3,14 @@
 #include "flowy/include/config_parser.hpp"
 #include "flowy/include/definitions.hpp"
 #include "flowy/include/lobe.hpp"
-#include "flowy/include/netcdf_file.hpp"
 #include "flowy/include/simulation.hpp"
 #include "flowy/include/topography.hpp"
 #include "flowy/include/topography_file.hpp"
 #include "pybind11/pytypes.h"
+
+#ifdef WITH_NETCDF
+#include "flowy/include/netcdf_file.hpp"
+#endif
 
 #define PYBIND11_DETAILED_ERROR_MESSAGES
 
@@ -62,6 +65,7 @@ PYBIND11_MODULE( flowpycpp, m )
         .def_readwrite( "y_data", &Flowy::AscFile::y_data )
         .def( "__repr__", []( const Flowy::AscFile & ) { return "<AscFile>"; } );
 
+#ifdef WITH_NETCDF
     py::class_<Flowy::NetCDFFile>( m, "NetCDFFile" )
         .def( py::init<>() )
         .def( py::init<Flowy::Topography, Flowy::OutputQuantitiy>() )
@@ -77,6 +81,7 @@ PYBIND11_MODULE( flowpycpp, m )
         .def_readwrite( "x_data", &Flowy::NetCDFFile::x_data )
         .def_readwrite( "y_data", &Flowy::NetCDFFile::y_data )
         .def( "__repr__", []( const Flowy::NetCDFFile & ) { return "<NetCDFFile>"; } );
+#endif
 
     py::class_<Flowy::Lobe>( m, "Lobe" )
         .def( py::init<>() )
