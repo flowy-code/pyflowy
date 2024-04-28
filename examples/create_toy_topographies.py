@@ -2,59 +2,41 @@ import flowpy as fpy
 import numpy as np
 import matplotlib.pyplot as plt
 
-# First we create a topograhy with constant sloe
-x_data = np.linspace(0, 10000, 1000)
-y_data = np.linspace(0, 10000, 1000)
+
+def create_topography(
+    height_cb, filename, xdim=10000, ydim=10000, res=10, lower_left_corner=[0, 0]
+):
+
+    # First we create a topograhy with constant slope
+    x_data = np.arange(lower_left_corner[0], xdim + lower_left_corner[0], res)
+    y_data = np.arange(lower_left_corner[1], ydim + lower_left_corner[1], res)
+
+    height_data = np.array([[height_cb(x, y) for y in y_data] for x in x_data])
+
+    asc_file = fpy.flowpycpp.AscFile()
+    asc_file.x_data = x_data
+    asc_file.y_data = y_data
+    asc_file.data = height_data
+
+    asc_file.save(filename)
 
 
-def height(x, y):
+def height_const_slope(x, y):
     return 5e-2 * x
 
 
-height_data = np.array([[height(x, y) for y in y_data] for x in x_data])
-
-asc_file = fpy.flowpycpp.AscFile()
-asc_file.x_data = x_data
-asc_file.y_data = y_data
-asc_file.height_data = height_data
-asc_file.cell_size = x_data[1] - x_data[0]
-asc_file.save("constant_slope.asc")
+create_topography(height_const_slope, filename="constant_slope")
 
 
-# Then we create a saddle topography
-x_data = np.linspace(0, 10000, 1000)
-y_data = np.linspace(0, 10000, 1000)
+def height_parabola(x, y):
+    return -1e-4 * (x - 5000) * (y - 5000)
 
 
-def height(x, y, center):
-    return -1e-4 * (x - center[0]) * (y - center[1])
+create_topography(height_parabola, filename="parabola")
 
 
-center = np.array([np.mean(x_data), np.mean(y_data)])
-height_data = np.array([[height(x, y, center) for y in y_data] for x in x_data])
-
-asc_file = fpy.flowpycpp.AscFile()
-asc_file.x_data = x_data
-asc_file.y_data = y_data
-asc_file.height_data = height_data
-asc_file.cell_size = x_data[1] - x_data[0]
-asc_file.save("saddle.asc")
-
-# Then we create a flat topography
-x_data = np.linspace(0, 50000, 5000)
-y_data = np.linspace(0, 50000, 5000)
-
-
-def height(x, y, center):
+def height_flat(x, y):
     return 0.0
 
 
-center = np.array([np.mean(x_data), np.mean(y_data)])
-height_data = np.array([[height(x, y, center) for y in y_data] for x in x_data])
-
-asc_file = fpy.flowpycpp.AscFile()
-asc_file.x_data = x_data
-asc_file.y_data = y_data
-asc_file.height_data = height_data
-asc_file.cell_size = x_data[1] - x_data[0]
-asc_file.save("flat.asc")
+create_topography(height_flat, filename="flat")
