@@ -1,0 +1,1 @@
+option('with_netcdf', type : 'boolean', value : true, description : 'Include NetCDF support')

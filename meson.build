@@ -6,7 +6,14 @@ deps = []
 
 cppc = meson.get_compiler('cpp')
 
-flowy_proj = subproject('flowy')
+# If we want to build with netcdf we have to define this preprocessor variable
+# otherwise the netcdf header will be empty
+opt_with_netcdf = get_option('with_netcdf')
+if opt_with_netcdf
+  args += ['-DWITH_NETCDF']
+endif
+
+flowy_proj = subproject('flowy', default_options : ['with_netcdf=' + opt_with_netcdf.to_string()])
 flowylib = flowy_proj.get_variable('flowylib_shared_dep')
 deps += [flowylib]
 
