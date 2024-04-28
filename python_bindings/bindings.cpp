@@ -62,6 +62,22 @@ PYBIND11_MODULE( flowpycpp, m )
         .def_readwrite( "y_data", &Flowy::AscFile::y_data )
         .def( "__repr__", []( const Flowy::AscFile & ) { return "<AscFile>"; } );
 
+    py::class_<Flowy::NetCDFFile>( m, "NetCDFFile" )
+        .def( py::init<>() )
+        .def( py::init<Flowy::Topography, Flowy::OutputQuantitiy>() )
+        .def( py::init<std::filesystem::path>(), "file_path"_a )
+        .def( py::init<std::filesystem::path, Flowy::TopographyCrop>() )
+        .def( "save", &Flowy::NetCDFFile::save )
+        .def( "lower_left_corner", &Flowy::NetCDFFile::lower_left_corner )
+        .def( "cell_size", &Flowy::NetCDFFile::cell_size )
+        .def( "to_topography", &Flowy::NetCDFFile::to_topography )
+        .def( "crop_to_content", &Flowy::NetCDFFile::crop_to_content )
+        .def_readwrite( "no_data_value", &Flowy::NetCDFFile::no_data_value )
+        .def_readwrite( "data", &Flowy::NetCDFFile::data )
+        .def_readwrite( "x_data", &Flowy::NetCDFFile::x_data )
+        .def_readwrite( "y_data", &Flowy::NetCDFFile::y_data )
+        .def( "__repr__", []( const Flowy::NetCDFFile & ) { return "<NetCDFFile>"; } );
+
     py::class_<Flowy::Lobe>( m, "Lobe" )
         .def( py::init<>() )
         .def_readwrite( "center", &Flowy::Lobe::center )
