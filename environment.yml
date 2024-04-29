@@ -20,3 +20,5 @@ dependencies:
   - requests
   - libnetcdf
   - hdf5
+  - pytest
+  - meson-python
