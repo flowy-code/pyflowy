@@ -82,6 +82,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install dependencies
+        run: sudo apt-get install libnetcdf-dev libfmt-dev libxtensor-dev libxtensor-blas-dev
+
       - name: Build sdist
         shell: bash -l {0}
         run: pipx run build --sdist
