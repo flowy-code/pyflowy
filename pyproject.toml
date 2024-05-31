@@ -35,7 +35,6 @@ dist = ['--include-subprojects']
 
 [tool.cibuildwheel]
 build = "*"
-skip = "cp3{6,7}-*"
 
 test-command = "pytest {project}/tests"
 test-skip = ["*universal2:arm64"]
@@ -102,8 +101,9 @@ before-all = [
     # Build static NetCDF library
     "curl -L https://github.com/Unidata/netcdf-c/archive/refs/tags/v${NETCDF_VERSION}.tar.gz | tar -xzC /tmp",
     "mkdir /tmp/build-netcdf",
+    "if [ $(getconf LONG_BIT) -ge 64 ]; then CDF5_OPTION='-DENABLE_CDF5=ON'; else CDF5_OPTION='-DENABLE_CDF5=OFF'; fi",
     # Options partially kanged from https://github.com/muSpectre/muGrid/blob/main/pyproject.toml
-    "cmake -S /tmp/netcdf-c-${NETCDF_VERSION} -B /tmp/build-netcdf ${COMMON_CMAKE} -DBUILD_TESTING=OFF -DBUILD_TESTSETS=OFF -DBUILD_UTILITIES=OFF -DENABLE_CDF5=ON -DENABLE_DAP=OFF -DENABLE_NETCDF4=OFF -DENABLE_NETCDF_4=OFF -DENABLE_PLUGINS=OFF",
+    "cmake -S /tmp/netcdf-c-${NETCDF_VERSION} -B /tmp/build-netcdf ${COMMON_CMAKE} ${CDF5_OPTION} -DBUILD_TESTING=OFF -DBUILD_TESTSETS=OFF -DBUILD_UTILITIES=OFF -DENABLE_DAP=OFF -DENABLE_NETCDF4=OFF -DENABLE_NETCDF_4=OFF -DENABLE_PLUGINS=OFF",
     "cmake --build /tmp/build-netcdf --target install",
     "rm -rf /tmp/build-netcdf /tmp/netcdf-c-${NETCDF_VERSION}"
 ]
