@@ -5,7 +5,7 @@ description = "Python bindings for flowy"
 authors = [
     {name = "Amrita Goswami", email = "amrita16thaug646@gmail.com"},
     {name = "Moritz Sallermann", email = "moritzsallermann@gmail.com"},
-
+    {name = "Rohit Goswami", email = "rgoswami@ieee.org"},
 ]
 
 dependencies = [
@@ -36,7 +36,7 @@ dist = ['--include-subprojects']
 [tool.cibuildwheel]
 build-frontend = "build"
 # TODO(rg): Needs an equivalent on windows, use an override
-before-build = "bash {project}/tools/wheels/cibw_setup.sh"
+before-build = "bash {project}/tools/wheels/cibw_setup.sh {project}"
 test-command = "pytest {project}/tests"
 test-skip = ["*universal2:arm64"]
 test-requires = "pytest"
