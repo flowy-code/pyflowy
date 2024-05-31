@@ -38,7 +38,6 @@ build-frontend = "build"
 # TODO(rg): Needs an equivalent on windows, use an override
 before-build = "bash {project}/tools/wheels/cibw_setup.sh {project}"
 test-command = "pytest {project}/tests"
-test-skip = ["*universal2:arm64"]
 test-requires = "pytest"
 build-verbosity = 1
 
