@@ -55,7 +55,7 @@ jobs:
           - [macos-12, macosx_x86_64]
           - [macos-12, macosx_arm64]
           # - [windows-2019, win_amd64]
-        python-version: ['3.9', '3.10', '3.11']
+        python-version: ['3.11'] # This is the python version of the CI, not related to the ones built by cibuildwheel
 
     steps:
       - uses: actions/checkout@v4
@@ -69,6 +69,21 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           path: ./wheelhouse/*.whl
+
+      - name: Setup manylinux
+        if: matrix.buildplat[1] == 'manylinux_x86_64'
+        run: |
+          echo 'CIBW_SKIP="*macos* *musllinux*"' >> "$GITHUB_ENV"
+
+      - name: Setup musllinux
+        if: matrix.buildplat[1] == 'musllinux_x86_64'
+        run: |
+          echo 'CIBW_SKIP="*macos* *manylinux*"' >> "$GITHUB_ENV"
+
+      - name: Setup macOS
+        if: matrix.buildplat[0] == 'macos-12'
+        run: |
+          echo 'CIBW_SKIP="*linux*"' >> "$GITHUB_ENV"
 
   build_sdist:
     name: Build source distribution

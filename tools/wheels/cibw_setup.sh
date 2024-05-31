@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Directories of interest
+PROJECT_DIR="${1:-$PWD}"
+PYTHON_SITEPKGS=$(python -c 'import site; print(site.getsitepackages()[0])')
+
 # Versions
 XTL_VERSION='0.7.7'
 XTENSOR_VERSION='0.25.0'
@@ -8,9 +12,6 @@ XTENSOR_PYTHON_VERSION='0.27.0'
 NETCDF_VERSION='4.9.0'
 FMT_VERSION='10.2.1'
 COMMON_CMAKE='-DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release -DCMAKE_POSITION_INDEPENDENT_CODE=TRUE -DBUILD_SHARED_LIBS=OFF'
-
-# Get Python site packages
-PYTHON_SITEPKGS=$(python -c 'import site; print(site.getsitepackages()[0])')
 
 # Function to download, extract, and rename directory
 download_and_rename() {
@@ -62,7 +63,6 @@ cmake -S /tmp/build-xtpy -B /tmp/build-xtpy/build ${COMMON_CMAKE}
 cmake --build /tmp/build-xtpy/build --target install
 rm -rf /tmp/build-xtpy
 
-# Reset CMAKE_PREFIX_PATH
 unset CMAKE_PREFIX_PATH
 
 # Build static NetCDF library
