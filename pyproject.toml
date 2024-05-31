@@ -53,9 +53,12 @@ before-all = [
     "XTL_VERSION='0.7.7'",
     "XTENSOR_VERSION='0.25.0'",
     "XTENSOR_BLAS_VERSION='0.21.0'",
+    "XTENSOR_PYTHON_VERSION='0.27.0'",
     "NETCDF_VERSION='4.9.0'",
     "FMT_VERSION='10.2.1'",
     "COMMON_CMAKE='-DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release -DCMAKE_POSITION_INDEPENDENT_CODE=TRUE -DBUILD_SHARED_LIBS=OFF'",
+    # Some of these are easiest obtained via pip and then set
+    "PYTHON_SITEPKGS=$(python -c 'import site; print(site.getsitepackages()[0])')",
 
     # Grab and install fmt
     "curl -L https://github.com/fmtlib/fmt/archive/refs/tags/${FMT_VERSION}.tar.gz | tar -xzC /tmp --transform 's|fmt-[^/]*|build-fmt|'",
@@ -63,6 +66,7 @@ before-all = [
     "cmake --build /tmp/build-fmt/build --target install",
     "rm -rf /tmp/build-fmt",
 
+    # TODO(rg): Probably worthwhile to grab xsimd
     # Grab and install xtl
     "curl -L https://github.com/xtensor-stack/xtl/archive/refs/tags/${XTL_VERSION}.tar.gz | tar -xzC /tmp --transform 's|xtl-[^/]*|build-xtl|'",
     "cmake -S /tmp/build-xtl -B /tmp/build-xtl/build ${COMMON_CMAKE}",
@@ -82,6 +86,17 @@ before-all = [
     "cmake -S /tmp/build-xtblas -B /tmp/build-xtblas/build -DVERSION=${XTENSOR_BLAS_VERSION} ${COMMON_CMAKE}",
     "cmake --build /tmp/build-xtblas/build --target install",
     "rm -rf /tmp/build-xtblas",
+
+    # xtensor-python needs these
+    "pip install pybind11 numpy",
+    "export CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:${PYTHON_SITEPKGS}",
+    # Grab and install xtensor-python from HaoZeke's fork
+    # Replace with upstream after https://github.com/xtensor-stack/xtensor-python/pull/243
+    "curl -L https://github.com/HaoZeke/xtensor-python/archive/refs/heads/addPkgConfig.tar.gz | tar -xzC /tmp --transform 's|xtensor-python-[^/]*|build-xtpy|'",
+    "cmake -S /tmp/build-xtpy -B /tmp/build-xtpy/build ${COMMON_CMAKE}",
+    "cmake --build /tmp/build-xtpy/build --target install",
+    "rm -rf /tmp/build-xtpy",
+    "unset CMAKE_PREFIX_PATH",
 
     # Build static NetCDF library
     "curl -L https://github.com/Unidata/netcdf-c/archive/refs/tags/v${NETCDF_VERSION}.tar.gz | tar -xzC /tmp",
