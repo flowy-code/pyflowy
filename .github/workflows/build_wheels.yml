@@ -50,10 +50,13 @@ jobs:
         # Github Actions doesn't support pairing matrix values together, let's improvise
         # https://github.com/github/feedback/discussions/7835#discussioncomment-1769026
         buildplat:
+          # TODO(rg): This needs to be pruned
+          # This will build all 21 (many,musl)linux related wheels (64, 32), for supported pythons 3.9, 3.10, 3.11, 3.12, pypy 3.9, pypy 3.10
           - [ubuntu-20.04, manylinux_x86_64]
-          - [ubuntu-20.04, musllinux_x86_64]
-          - [macos-12, macosx_x86_64]
-          - [macos-12, macosx_arm64]
+          # - [ubuntu-20.04, musllinux_x86_64]
+          # TODO(rg): Handle these later via indirection
+          # - [macos-12, macosx_x86_64]
+          # - [macos-12, macosx_arm64]
           # - [windows-2019, win_amd64]
         python-version: ['3.11'] # This is the python version of the CI, not related to the ones built by cibuildwheel
 
@@ -69,21 +72,6 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           path: ./wheelhouse/*.whl
-
-      - name: Setup manylinux
-        if: matrix.buildplat[1] == 'manylinux_x86_64'
-        run: |
-          echo 'CIBW_SKIP="*macos* *musllinux*"' >> "$GITHUB_ENV"
-
-      - name: Setup musllinux
-        if: matrix.buildplat[1] == 'musllinux_x86_64'
-        run: |
-          echo 'CIBW_SKIP="*macos* *manylinux*"' >> "$GITHUB_ENV"
-
-      - name: Setup macOS
-        if: matrix.buildplat[0] == 'macos-12'
-        run: |
-          echo 'CIBW_SKIP="*linux*"' >> "$GITHUB_ENV"
 
   build_sdist:
     name: Build source distribution
@@ -107,3 +95,15 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           path: dist/*.tar.gz
+
+      - uses: actions/github-script@v7
+        id: set-result
+        with:
+          script: |
+            const artifactLink = `${{ steps.upload-artifact.outputs.artifact-url }}`
+            github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: `Artifact located [here](${artifactLink})\nDebugging Link: ${artifactLink}`
+              })
