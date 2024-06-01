@@ -1,4 +1,4 @@
-import flowpy as fpy
+import pyflowy as pfy
 import numpy as np
 import matplotlib.pyplot as plt
 import math
@@ -22,7 +22,7 @@ def compute_lobe_axes( lobe, slope, input, lobe_dimensions ):
     return semi_major_axis, semi_minor_axis
 
 # Input parameters (we just construct this here)
-input = fpy.flowpycpp.InputParams()
+input = pfy.flowycpp.InputParams()
 input.source = "file.asc"
 input.total_volume = 20
 input.prescribed_avg_lobe_thickness = 1
@@ -38,7 +38,7 @@ input.max_aspect_ratio = 2.5
 input.aspect_ratio_coeff = 2.0
 
 # Create a Simulation object
-simulation = fpy.flowpycpp.Simulation(input, None)
+simulation = pfy.flowycpp.Simulation(input, None)
 # Topography data
 x_data = np.linspace(0, 40, 40)
 y_data = np.linspace(0, 20, 20)
@@ -46,16 +46,16 @@ height_data = np.zeros(shape=(len(x_data), len(y_data)))
 height_data = np.array(
     [[i + j for j in range(len(y_data))] for i in range(len(x_data))]
 )
-topography = fpy.flowpycpp.Topography(height_data, x_data, y_data)
+topography = pfy.flowycpp.Topography(height_data, x_data, y_data)
 simulation.topography = topography
 
 # Parent lobe
-parent_lobe = fpy.flowpycpp.Lobe()
+parent_lobe = pfy.flowycpp.Lobe()
 parent_lobe.semi_axes = [6, 2]
 parent_lobe.thickness = 20.0
 parent_lobe.center = [20, 10]
 # Descendent lobe
-descendent_lobe = fpy.flowpycpp.Lobe()
+descendent_lobe = pfy.flowycpp.Lobe()
 descendent_lobe.thickness = 20.0
 
 # Find the height and slope at the parent center and perturb the angle accordingly

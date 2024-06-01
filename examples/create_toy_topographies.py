@@ -1,4 +1,4 @@
-import flowpy as fpy
+import pyflowy as pfy
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -13,7 +13,7 @@ def height(x, y):
 
 height_data = np.array([[height(x, y) for y in y_data] for x in x_data])
 
-asc_file = fpy.flowpycpp.AscFile()
+asc_file = pfy.flowycpp.AscFile()
 asc_file.x_data = x_data
 asc_file.y_data = y_data
 asc_file.height_data = height_data
@@ -33,7 +33,7 @@ def height(x, y, center):
 center = np.array([np.mean(x_data), np.mean(y_data)])
 height_data = np.array([[height(x, y, center) for y in y_data] for x in x_data])
 
-asc_file = fpy.flowpycpp.AscFile()
+asc_file = pfy.flowycpp.AscFile()
 asc_file.x_data = x_data
 asc_file.y_data = y_data
 asc_file.height_data = height_data
@@ -52,7 +52,7 @@ def height(x, y, center):
 center = np.array([np.mean(x_data), np.mean(y_data)])
 height_data = np.array([[height(x, y, center) for y in y_data] for x in x_data])
 
-asc_file = fpy.flowpycpp.AscFile()
+asc_file = pfy.flowycpp.AscFile()
 asc_file.x_data = x_data
 asc_file.y_data = y_data
 asc_file.height_data = height_data

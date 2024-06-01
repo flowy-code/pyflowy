@@ -29,7 +29,7 @@ using namespace std::string_literals; // For ""s
 using namespace pybind11::literals;   // For ""_a
 namespace py = pybind11;              // Convention
 
-PYBIND11_MODULE( flowpycpp, m )
+PYBIND11_MODULE( flowycpp, m )
 {
     xt::import_numpy();
     m.doc() = "Python bindings for flowy"; // optional module docstring

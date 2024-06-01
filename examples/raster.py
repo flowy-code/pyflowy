@@ -1,4 +1,4 @@
-import flowpy as fpy
+import pyflowy as pfy
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -11,7 +11,7 @@ def add_lobe(lobe, topography, new_height_data):
         new_height_data[indices[0], indices[1]] += fraction * lobe.thickness
 
 
-lobe = fpy.flowpycpp.Lobe()
+lobe = pfy.flowycpp.Lobe()
 lobe.semi_axes = [8, 2]
 lobe.thickness = 20.0
 lobe.set_azimuthal_angle(np.pi / 4)
@@ -27,7 +27,7 @@ height_data = np.zeros(shape=(len(x_data), len(y_data)))
 
 height_data = np.array([[0 for j in range(len(y_data))] for i in range(len(x_data))])
 
-topography = fpy.flowpycpp.Topography(height_data, x_data, y_data)
+topography = pfy.flowycpp.Topography(height_data, x_data, y_data)
 
 bbox = topography.bounding_box(lobe.center, extent[0], extent[1])
 

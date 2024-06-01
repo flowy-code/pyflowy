@@ -1,4 +1,4 @@
-name: flowpyenv
+name: pyflowyenv
 channels:
   - conda-forge
 dependencies:

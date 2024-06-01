@@ -1,3 +1,7 @@
+# Added
+/wheelhouse/
+*.whl
+
 .cache/
 build/
 subprojects/*/

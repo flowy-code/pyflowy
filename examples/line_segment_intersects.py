@@ -1,8 +1,8 @@
-import flowpy as fpy
+import pyflowy as pfy
 import numpy as np
 import matplotlib.pyplot as plt
 
-lobe = fpy.flowpycpp.Lobe()
+lobe = pfy.flowycpp.Lobe()
 lobe.semi_axes = [2, 1]
 lobe.set_azimuthal_angle(np.pi / 4)
 lobe.center = [1, 2]

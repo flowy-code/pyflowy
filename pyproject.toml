@@ -1,11 +1,11 @@
 [project]
-name = "flowpy"
+name = "pyflowy"
 version = "0.0.1"
 description = "Python bindings for flowy"
 authors = [
     {name = "Amrita Goswami", email = "amrita16thaug646@gmail.com"},
     {name = "Moritz Sallermann", email = "moritzsallermann@gmail.com"},
-
+    {name = "Rohit Goswami", email = "rgoswami@ieee.org"},
 ]
 
 dependencies = [
@@ -22,12 +22,44 @@ requires = ["pybind11", "meson-python", "numpy"]
 build-backend = "mesonpy"
 # Important, tells pip how to install the package
 [tool.meson-python.args]
-setup = ['-Dwrap_mode=forcefallback',
-         # ^-- collects subprojects, see https://github.com/ERGO-Code/HiGHS/pull/1343#discussion_r1252446966
-        ]
+setup = [
+'-Dwrap_mode=forcefallback',
+# ^-- collects subprojects, see https://github.com/ERGO-Code/HiGHS/pull/1343#discussion_r1252446966
+]
 # Skip during installation to prevent local RPATH stripping issues
 # See: https://github.com/mesonbuild/meson-python/discussions/410
 install = ['--skip-subprojects']
 # Include so auditwheel on the CI can correctly generate wheels
 # See: https://github.com/ERGO-Code/HiGHS/pull/1343/files
 dist = ['--include-subprojects']
+
+[tool.cibuildwheel]
+build-frontend = "build"
+# TODO(rg): Needs an equivalent on windows, use an override
+before-build = "bash {project}/tools/wheels/cibw_setup.sh {project}"
+test-command = "pytest {project}/tests"
+test-requires = "pytest"
+build-verbosity = 1
+
+[tool.cibuildwheel.linux]
+manylinux-x86_64-image = "manylinux2014"
+manylinux-i686-image = "manylinux2014"
+repair-wheel-command = "auditwheel repair -w {dest_dir} {wheel}"
+
+# /project will be the $PWD equivalent inside the docker used to build the wheel
+[tool.cibuildwheel.linux.environment]
+RUNNER_OS="Linux"
+[tool.cibuildwheel.macos.environment]
+RUNNER_OS="MacOS"
+
+[tool.cibuildwheel.macos]
+archs = ["x86_64 arm64"]
+repair-wheel-command = [
+  "delocate-listdeps {wheel}",
+  "delocate-wheel --require-archs {delocate_archs} -w {dest_dir} {wheel}",
+]
+
+
+# [tool.cibuildwheel.windows]
+# before-build = "pip install delvewheel"
+# repair-wheel-command = "delvewheel repair -w {dest_dir} {wheel}"
