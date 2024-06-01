@@ -1,13 +1,13 @@
 import pytest 
 import numpy as np
-import flowpy as fpy
+import pyflowy as pfy
 
 @pytest.fixture
 def lobe():
     ''' 
     Creates a lobe which you can reuse.
     '''
-    lobe = fpy.flowpycpp.Lobe()
+    lobe = pfy.flowycpp.Lobe()
     lobe.semi_axes = [8, 2]
     lobe.thickness = 20.0
     lobe.set_azimuthal_angle(np.pi / 4.0)

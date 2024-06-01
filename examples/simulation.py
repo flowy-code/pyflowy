@@ -1,4 +1,4 @@
-import flowpy as fpy
+import pyflowy as pfy
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.colors import Normalize
@@ -13,7 +13,7 @@ def compute_descendent_lobe_position( descendent_lobe, parent_lobe, final_buddin
     return new_lobe_center
 
 # Input parameters (we just construct this here)
-input = fpy.flowpycpp.InputParams()
+input = pfy.flowycpp.InputParams()
 input.source = "file.asc"
 input.total_volume = 20
 input.prescribed_lobe_area = 20
@@ -44,7 +44,7 @@ input.max_aspect_ratio = 2.5
 input.aspect_ratio_coeff = 2.0
 
 # Create a Simulation object
-simulation = fpy.flowpycpp.Simulation(input, None)
+simulation = pfy.flowycpp.Simulation(input, None)
 # Topography data
 x_data = np.linspace(0, 40, 40)
 y_data = np.linspace(0, 20, 20)
@@ -52,7 +52,7 @@ height_data = np.zeros(shape=(len(x_data), len(y_data)))
 height_data = np.array(
     [[i + j for j in range(len(y_data))] for i in range(len(x_data))]
 )
-topography = fpy.flowpycpp.Topography(height_data, x_data, y_data)
+topography = pfy.flowycpp.Topography(height_data, x_data, y_data)
 simulation.topography = topography
 
 # Reproduce the simulation.run loop 
@@ -62,7 +62,7 @@ budding_point_list = []
 thickness = 1 # All lobes have the same thickness
 
 for idx_lobe in range(input.n_init):
-    lobe_cur = fpy.flowpycpp.Lobe()
+    lobe_cur = pfy.flowycpp.Lobe()
     
     simulation.compute_initial_lobe_position( 0, lobe_cur )
     lobe_cur_thickness = thickness
@@ -73,7 +73,7 @@ for idx_lobe in range(input.n_init):
 
 # Skip initial lobes and go over the rest
 for idx_lobe in range(input.n_init, n_lobes):
-    lobe_cur = fpy.flowpycpp.Lobe()
+    lobe_cur = pfy.flowycpp.Lobe()
 
     idx_parent = select_parent_lobe( idx_lobe )
     lobe_parent = lobes[idx_parent]

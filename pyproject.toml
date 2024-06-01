@@ -1,5 +1,5 @@
 [project]
-name = "flowpy"
+name = "pyflowy"
 version = "0.0.1"
 description = "Python bindings for flowy"
 authors = [

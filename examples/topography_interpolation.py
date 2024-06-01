@@ -1,13 +1,13 @@
-import flowpy as fpy
+import pyflowy as pfy
 import numpy as np
 import matplotlib.pyplot as plt
 
-asc_file = fpy.flowpycpp.AscFile("topo.asc")
+asc_file = pfy.flowycpp.AscFile("topo.asc")
 height_data = asc_file.height_data
 x_data = asc_file.x_data
 y_data = asc_file.y_data
 
-topography = fpy.flowpycpp.Topography(
+topography = pfy.flowycpp.Topography(
     asc_file.height_data, asc_file.x_data, asc_file.y_data
 )
 

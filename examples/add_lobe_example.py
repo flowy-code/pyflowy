@@ -1,8 +1,8 @@
-import flowpy as fpy
+import pyflowy as pfy
 import numpy as np
 import matplotlib.pyplot as plt
 
-lobe = fpy.flowpycpp.Lobe()
+lobe = pfy.flowycpp.Lobe()
 lobe.semi_axes = [8, 2]
 lobe.thickness = 20.0
 lobe.set_azimuthal_angle(np.pi / 4)
@@ -20,7 +20,7 @@ height_data = np.array(
     [[i + j for j in range(len(y_data))] for i in range(len(x_data))]
 )
 
-topography = fpy.flowpycpp.Topography(height_data, x_data, y_data)
+topography = pfy.flowycpp.Topography(height_data, x_data, y_data)
 
 for p in perimeter:
     print(topography.height_and_slope(p))
@@ -28,7 +28,7 @@ for p in perimeter:
 budding_point = topography.find_preliminary_budding_point(lobe, 30)
 
 
-new_lobe = fpy.flowpycpp.Lobe()
+new_lobe = pfy.flowycpp.Lobe()
 new_lobe.set_azimuthal_angle(0)
 new_lobe.thickness = 20
 new_lobe.center = [20, 10]

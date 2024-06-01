@@ -1,4 +1,4 @@
-project('flowpy', 'cpp', 
+project('pyflowy', 'cpp',
   default_options : ['warning_level=3', 'cpp_std=c++20'])
 
 args = []
@@ -32,7 +32,7 @@ deps += [pyb11_dep]
 
 # for the bindings
 py.extension_module(
-  'flowpycpp',
+  'flowycpp',
   sources : [
     'python_bindings/bindings.cpp'
   ],
@@ -40,22 +40,22 @@ py.extension_module(
   dependencies: deps,
   cpp_args : args,
   install: true,
-  subdir: 'flowpy/'
+  subdir: 'pyflowy/'
 )
 
 
-# flowpy main package
+# pyflowy main package
 py.install_sources([
-    'flowpy/__init__.py',
+    'pyflowy/__init__.py',
   ],
   pure: false, # install next to compiled extension
-  subdir: 'flowpy'
+  subdir: 'pyflowy'
 )
 
 # Util 
 py.install_sources([
-    'flowpy/util.py',
+    'pyflowy/util.py',
   ],
   pure: false,
-  subdir: 'flowpy'
+  subdir: 'pyflowy'
 )
