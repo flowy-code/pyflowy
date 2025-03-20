@@ -3,9 +3,11 @@
 #include "flowy/include/config_parser.hpp"
 #include "flowy/include/definitions.hpp"
 #include "flowy/include/lobe.hpp"
+#include "flowy/include/models/mr_lava_loba.hpp"
 #include "flowy/include/simulation.hpp"
 #include "flowy/include/topography.hpp"
 #include "flowy/include/topography_file.hpp"
+#include "pybind11/detail/common.h"
 #include "pybind11/pytypes.h"
 
 #ifdef WITH_NETCDF
@@ -45,13 +47,13 @@ PYBIND11_MODULE( flowycpp, m )
         .def_readwrite( "y_min", &Flowy::TopographyCrop::y_min )
         .def_readwrite( "y_max", &Flowy::TopographyCrop::y_max );
 
-    py::enum_<Flowy::OutputQuantitiy>( m, "OutputQuantitiy" )
-        .value( "Hazard", Flowy::OutputQuantitiy::Hazard )
-        .value( "Height", Flowy::OutputQuantitiy::Height );
+    py::enum_<Flowy::OutputQuantity>( m, "OutputQuantity" )
+        .value( "Hazard", Flowy::OutputQuantity::Hazard )
+        .value( "Height", Flowy::OutputQuantity::Height );
 
     py::class_<Flowy::AscFile>( m, "AscFile" )
         .def( py::init<>() )
-        .def( py::init<Flowy::Topography, Flowy::OutputQuantitiy>() )
+        .def( py::init<Flowy::Topography, Flowy::OutputQuantity>() )
         .def( py::init<std::filesystem::path>(), "file_path"_a )
         .def( py::init<std::filesystem::path, Flowy::TopographyCrop>() )
         .def( "save", &Flowy::AscFile::save )
@@ -101,7 +103,8 @@ PYBIND11_MODULE( flowycpp, m )
         .def( "extent_xy", &Flowy::Lobe::extent_xy )
         .def( "line_segment_intersects", &Flowy::Lobe::line_segment_intersects )
         .def( "is_point_in_lobe", &Flowy::Lobe::is_point_in_lobe )
-        .def( "point_at_angle", &Flowy::Lobe::point_at_angle )
+        .def( "point_at_angle", py::overload_cast<double>( &Flowy::Lobe::point_at_angle, py::const_ ) )
+        .def( "point_at_angle", py::overload_cast<double, double>( &Flowy::Lobe::point_at_angle, py::const_ ) )
         .def( "rasterize_perimeter", &Flowy::Lobe::rasterize_perimeter );
 
     py::class_<Flowy::LobeCells>( m, "LobeCells" )
@@ -183,11 +186,10 @@ PYBIND11_MODULE( flowycpp, m )
 
     py::class_<Flowy::CommonLobeDimensions>( m, "CommonLobeDimensions" )
         .def( py::init<>() )
-        .def( py::init<Flowy::Config::InputParams, Flowy::Topography>() )
+        .def( py::init<Flowy::Config::InputParams>() )
         .def_readwrite( "avg_lobe_thickness", &Flowy::CommonLobeDimensions::avg_lobe_thickness )
         .def_readwrite( "lobe_area", &Flowy::CommonLobeDimensions::lobe_area )
         .def_readwrite( "max_semiaxis", &Flowy::CommonLobeDimensions::max_semiaxis )
-        .def_readwrite( "max_cells", &Flowy::CommonLobeDimensions::max_cells )
         .def_readwrite( "thickness_min", &Flowy::CommonLobeDimensions::thickness_min );
 
     py::class_<Flowy::Simulation>( m, "Simulation" )
@@ -195,15 +197,17 @@ PYBIND11_MODULE( flowycpp, m )
         .def_readwrite( "input", &Flowy::Simulation::input )
         .def_readwrite( "topography", &Flowy::Simulation::topography )
         .def_readwrite( "lobes", &Flowy::Simulation::lobes )
-        .def_readwrite( "lobe_dimensions", &Flowy::Simulation::lobe_dimensions )
-        .def( "compute_initial_lobe_position", &Flowy::Simulation::compute_initial_lobe_position )
-        .def( "compute_lobe_axes", &Flowy::Simulation::compute_lobe_axes )
-        .def( "compute_descendent_lobe_position", &Flowy::Simulation::compute_descendent_lobe_position )
-        .def( "perturb_lobe_angle", &Flowy::Simulation::perturb_lobe_angle )
-        .def( "select_parent_lobe", &Flowy::Simulation::select_parent_lobe )
-        .def( "add_inertial_contribution", &Flowy::Simulation::add_inertial_contribution )
         .def( "stop_condition", &Flowy::Simulation::stop_condition )
         .def( "run", &Flowy::Simulation::run );
+
+    py::class_<Flowy::MrLavaLoba>( m, "MrLavaLoba" )
+        .def_readwrite( "lobe_dimensions", &Flowy::MrLavaLoba::lobe_dimensions )
+        .def( "compute_initial_lobe_position", &Flowy::MrLavaLoba::compute_initial_lobe_position )
+        .def( "compute_lobe_axes", &Flowy::MrLavaLoba::compute_lobe_axes )
+        .def( "compute_descendent_lobe_position", &Flowy::MrLavaLoba::compute_descendent_lobe_position )
+        .def( "perturb_lobe_angle", &Flowy::MrLavaLoba::perturb_lobe_angle )
+        .def( "select_parent_lobe", &Flowy::MrLavaLoba::select_parent_lobe )
+        .def( "add_inertial_contribution", &Flowy::MrLavaLoba::add_inertial_contribution );
 
     m.def(
         "parse_config", &Flowy::Config::parse_config, "A function to parse input settings from a TOML file.",

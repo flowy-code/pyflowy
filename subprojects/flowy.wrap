@@ -1,5 +1,5 @@
 [wrap-git]
 directory=flowy
 url=https://github.com/flowy-code/flowy.git
-revision=e4bd3e2f5e220f7588a155643d604ffe204c8802
+revision=edb24844c42a4921f596b06129540b7aa80deb28
 depth=1
