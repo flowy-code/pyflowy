@@ -219,16 +219,8 @@ PYBIND11_MODULE( flowycpp, m )
         .def_readwrite( "topography", &Flowy::Simulation::topography )
         .def_readwrite( "lobes", &Flowy::Simulation::lobes )
         .def( "stop_condition", &Flowy::Simulation::stop_condition )
-        .def( "run", &Flowy::Simulation::run );
-
-    py::class_<Flowy::MrLavaLoba>( m, "MrLavaLoba" )
-        .def_readwrite( "lobe_dimensions", &Flowy::MrLavaLoba::lobe_dimensions )
-        .def( "compute_initial_lobe_position", &Flowy::MrLavaLoba::compute_initial_lobe_position )
-        .def( "compute_lobe_axes", &Flowy::MrLavaLoba::compute_lobe_axes )
-        .def( "compute_descendent_lobe_position", &Flowy::MrLavaLoba::compute_descendent_lobe_position )
-        .def( "perturb_lobe_angle", &Flowy::MrLavaLoba::perturb_lobe_angle )
-        .def( "select_parent_lobe", &Flowy::MrLavaLoba::select_parent_lobe )
-        .def( "add_inertial_contribution", &Flowy::MrLavaLoba::add_inertial_contribution );
+        .def( "run", &Flowy::Simulation::run )
+        .def( "steps", &Flowy::Simulation::steps );
 
     m.def(
         "parse_config", &Flowy::Config::parse_config, "A function to parse input settings from a TOML file.",
@@ -236,4 +228,13 @@ PYBIND11_MODULE( flowycpp, m )
 
     m.def(
         "validate_settings", &Flowy::Config::validate_settings, "A function to validate the Flowy config settings"_a );
+
+    auto mr_lava_loba_m = m.def_submodule( "mr_lava_loba" );
+    mr_lava_loba_m.def( "compute_initial_lobe_position", &Flowy::MrLavaLoba::compute_initial_lobe_position );
+    mr_lava_loba_m.def( "compute_lobe_axes", &Flowy::MrLavaLoba::compute_lobe_axes );
+    mr_lava_loba_m.def( "compute_descendent_lobe_position", &Flowy::MrLavaLoba::compute_descendent_lobe_position );
+    mr_lava_loba_m.def( "perturb_lobe_angle", &Flowy::MrLavaLoba::perturb_lobe_angle );
+    mr_lava_loba_m.def( "select_parent_lobe", &Flowy::MrLavaLoba::select_parent_lobe );
+    mr_lava_loba_m.def( "add_inertial_contribution", &Flowy::MrLavaLoba::add_inertial_contribution );
+
 }
