@@ -3,9 +3,11 @@
 #include "flowy/include/config_parser.hpp"
 #include "flowy/include/definitions.hpp"
 #include "flowy/include/lobe.hpp"
+#include "flowy/include/models/mr_lava_loba.hpp"
 #include "flowy/include/simulation.hpp"
 #include "flowy/include/topography.hpp"
 #include "flowy/include/topography_file.hpp"
+#include "pybind11/detail/common.h"
 #include "pybind11/pytypes.h"
 
 #ifdef WITH_NETCDF
@@ -45,13 +47,13 @@ PYBIND11_MODULE( flowycpp, m )
         .def_readwrite( "y_min", &Flowy::TopographyCrop::y_min )
         .def_readwrite( "y_max", &Flowy::TopographyCrop::y_max );
 
-    py::enum_<Flowy::OutputQuantitiy>( m, "OutputQuantitiy" )
-        .value( "Hazard", Flowy::OutputQuantitiy::Hazard )
-        .value( "Height", Flowy::OutputQuantitiy::Height );
+    py::enum_<Flowy::OutputQuantity>( m, "OutputQuantity" )
+        .value( "Hazard", Flowy::OutputQuantity::Hazard )
+        .value( "Height", Flowy::OutputQuantity::Height );
 
     py::class_<Flowy::AscFile>( m, "AscFile" )
         .def( py::init<>() )
-        .def( py::init<Flowy::Topography, Flowy::OutputQuantitiy>() )
+        .def( py::init<Flowy::Topography, Flowy::OutputQuantity>() )
         .def( py::init<std::filesystem::path>(), "file_path"_a )
         .def( py::init<std::filesystem::path, Flowy::TopographyCrop>() )
         .def( "save", &Flowy::AscFile::save )
@@ -101,7 +103,8 @@ PYBIND11_MODULE( flowycpp, m )
         .def( "extent_xy", &Flowy::Lobe::extent_xy )
         .def( "line_segment_intersects", &Flowy::Lobe::line_segment_intersects )
         .def( "is_point_in_lobe", &Flowy::Lobe::is_point_in_lobe )
-        .def( "point_at_angle", &Flowy::Lobe::point_at_angle )
+        .def( "point_at_angle", py::overload_cast<double>( &Flowy::Lobe::point_at_angle, py::const_ ) )
+        .def( "point_at_angle", py::overload_cast<double, double>( &Flowy::Lobe::point_at_angle, py::const_ ) )
         .def( "rasterize_perimeter", &Flowy::Lobe::rasterize_perimeter );
 
     py::class_<Flowy::LobeCells>( m, "LobeCells" )
@@ -133,18 +136,43 @@ PYBIND11_MODULE( flowycpp, m )
         .def_readwrite( "idx_x_higher", &Flowy::Topography::BoundingBox::idx_x_higher )
         .def_readwrite( "idx_y_higher", &Flowy::Topography::BoundingBox::idx_y_higher );
 
+    py::enum_<Flowy::StorageDataType>( m, "StorageDataType" )
+        .value( "Short", Flowy::StorageDataType::Short )
+        .value( "Float", Flowy::StorageDataType::Float )
+        .value( "Double", Flowy::StorageDataType::Double );
+
+    py::class_<Flowy::Config::OutputSettings>( m, "OutputSettings" )
+        .def( py::init<>() )
+        .def_readwrite( "crop_to_content", &Flowy::Config::OutputSettings::crop_to_content )
+        .def_readwrite( "use_netcdf", &Flowy::Config::OutputSettings::use_netcdf )
+        .def_readwrite( "compression", &Flowy::Config::OutputSettings::compression )
+        .def_readwrite( "compression_level", &Flowy::Config::OutputSettings::compression_level )
+        .def_readwrite( "shuffle", &Flowy::Config::OutputSettings::shuffle )
+        .def_readwrite( "data_type", &Flowy::Config::OutputSettings::data_type );
+
     py::class_<Flowy::Config::InputParams>( m, "InputParams" )
         .def( py::init<>() )
         .def_readwrite( "output_folder", &Flowy::Config::InputParams::output_folder )
+        .def_readwrite( "output_settings", &Flowy::Config::InputParams::output_settings )
+        .def_readwrite( "write_lobes_csv", &Flowy::Config::InputParams::write_lobes_csv )
+        .def_readwrite( "print_remaining_time", &Flowy::Config::InputParams::print_remaining_time )
+        .def_readwrite( "save_final_dem", &Flowy::Config::InputParams::save_final_dem )
+        .def_readwrite( "write_thickness_every_n_lobes", &Flowy::Config::InputParams::write_thickness_every_n_lobes )
+        .def_readwrite( "masking_tolerance", &Flowy::Config::InputParams::masking_tolerance )
+        .def_readwrite( "masking_max_iter", &Flowy::Config::InputParams::masking_max_iter )
+        .def_readwrite( "rng_seed", &Flowy::Config::InputParams::rng_seed )
+        .def_readwrite( "volume_correction", &Flowy::Config::InputParams::volume_correction )
         .def_readwrite( "run_name", &Flowy::Config::InputParams::run_name )
         .def_readwrite( "source", &Flowy::Config::InputParams::source )
         .def_readwrite( "vent_coordinates", &Flowy::Config::InputParams::vent_coordinates )
+        .def( "n_vents", &Flowy::Config::InputParams::n_vents )
         .def_readwrite( "save_hazard_data", &Flowy::Config::InputParams::save_hazard_data )
         .def_readwrite( "n_flows", &Flowy::Config::InputParams::n_flows )
         .def_readwrite( "n_lobes", &Flowy::Config::InputParams::n_lobes )
         .def_readwrite( "thickening_parameter", &Flowy::Config::InputParams::thickening_parameter )
         .def_readwrite( "prescribed_lobe_area", &Flowy::Config::InputParams::prescribed_lobe_area )
         .def_readwrite( "prescribed_avg_lobe_thickness", &Flowy::Config::InputParams::prescribed_avg_lobe_thickness )
+        .def_readwrite( "masking_threshold", &Flowy::Config::InputParams::masking_threshold )
         .def_readwrite( "min_n_lobes", &Flowy::Config::InputParams::min_n_lobes )
         .def_readwrite( "max_n_lobes", &Flowy::Config::InputParams::max_n_lobes )
         .def_readwrite( "inertial_exponent", &Flowy::Config::InputParams::inertial_exponent )
@@ -153,6 +181,7 @@ PYBIND11_MODULE( flowycpp, m )
         .def_readwrite( "thickness_ratio", &Flowy::Config::InputParams::thickness_ratio )
         .def_readwrite( "fixed_dimension_flag", &Flowy::Config::InputParams::fixed_dimension_flag )
         .def_readwrite( "vent_flag", &Flowy::Config::InputParams::vent_flag )
+        .def_readwrite( "fissure_end_coordinates", &Flowy::Config::InputParams::fissure_end_coordinates )
         .def_readwrite( "fissure_probabilities", &Flowy::Config::InputParams::fissure_probabilities )
         .def_readwrite( "total_volume", &Flowy::Config::InputParams::total_volume )
         .def_readwrite( "east_to_vent", &Flowy::Config::InputParams::east_to_vent )
@@ -160,7 +189,7 @@ PYBIND11_MODULE( flowycpp, m )
         .def_readwrite( "south_to_vent", &Flowy::Config::InputParams::south_to_vent )
         .def_readwrite( "north_to_vent", &Flowy::Config::InputParams::north_to_vent )
         .def_readwrite( "channel_file", &Flowy::Config::InputParams::channel_file )
-        .def_readwrite( "alfa_channel", &Flowy::Config::InputParams::alfa_channel )
+        .def_readwrite( "alpha_channel", &Flowy::Config::InputParams::alfa_channel )
         .def_readwrite( "d1", &Flowy::Config::InputParams::d1 )
         .def_readwrite( "d2", &Flowy::Config::InputParams::d2 )
         .def_readwrite( "eps", &Flowy::Config::InputParams::eps )
@@ -172,22 +201,16 @@ PYBIND11_MODULE( flowycpp, m )
         .def_readwrite( "a_beta", &Flowy::Config::InputParams::a_beta )
         .def_readwrite( "b_beta", &Flowy::Config::InputParams::b_beta )
         .def_readwrite( "max_aspect_ratio", &Flowy::Config::InputParams::max_aspect_ratio )
-        .def_readwrite( "saveraster_flag", &Flowy::Config::InputParams::saveraster_flag )
         .def_readwrite( "aspect_ratio_coeff", &Flowy::Config::InputParams::aspect_ratio_coeff )
-        .def_readwrite( "start_from_dist_flag", &Flowy::Config::InputParams::start_from_dist_flag )
-        .def_readwrite( "force_max_length", &Flowy::Config::InputParams::force_max_length )
-        .def_readwrite( "max_length", &Flowy::Config::InputParams::max_length )
-        .def_readwrite( "n_check_loop", &Flowy::Config::InputParams::n_check_loop )
         .def_readwrite( "restart_files", &Flowy::Config::InputParams::restart_files )
         .def_readwrite( "restart_filling_parameters", &Flowy::Config::InputParams::restart_filling_parameters );
 
     py::class_<Flowy::CommonLobeDimensions>( m, "CommonLobeDimensions" )
         .def( py::init<>() )
-        .def( py::init<Flowy::Config::InputParams, Flowy::Topography>() )
+        .def( py::init<Flowy::Config::InputParams>() )
         .def_readwrite( "avg_lobe_thickness", &Flowy::CommonLobeDimensions::avg_lobe_thickness )
         .def_readwrite( "lobe_area", &Flowy::CommonLobeDimensions::lobe_area )
         .def_readwrite( "max_semiaxis", &Flowy::CommonLobeDimensions::max_semiaxis )
-        .def_readwrite( "max_cells", &Flowy::CommonLobeDimensions::max_cells )
         .def_readwrite( "thickness_min", &Flowy::CommonLobeDimensions::thickness_min );
 
     py::class_<Flowy::Simulation>( m, "Simulation" )
@@ -195,17 +218,22 @@ PYBIND11_MODULE( flowycpp, m )
         .def_readwrite( "input", &Flowy::Simulation::input )
         .def_readwrite( "topography", &Flowy::Simulation::topography )
         .def_readwrite( "lobes", &Flowy::Simulation::lobes )
-        .def_readwrite( "lobe_dimensions", &Flowy::Simulation::lobe_dimensions )
-        .def( "compute_initial_lobe_position", &Flowy::Simulation::compute_initial_lobe_position )
-        .def( "compute_lobe_axes", &Flowy::Simulation::compute_lobe_axes )
-        .def( "compute_descendent_lobe_position", &Flowy::Simulation::compute_descendent_lobe_position )
-        .def( "perturb_lobe_angle", &Flowy::Simulation::perturb_lobe_angle )
-        .def( "select_parent_lobe", &Flowy::Simulation::select_parent_lobe )
-        .def( "add_inertial_contribution", &Flowy::Simulation::add_inertial_contribution )
         .def( "stop_condition", &Flowy::Simulation::stop_condition )
         .def( "run", &Flowy::Simulation::run );
+
+    py::class_<Flowy::MrLavaLoba>( m, "MrLavaLoba" )
+        .def_readwrite( "lobe_dimensions", &Flowy::MrLavaLoba::lobe_dimensions )
+        .def( "compute_initial_lobe_position", &Flowy::MrLavaLoba::compute_initial_lobe_position )
+        .def( "compute_lobe_axes", &Flowy::MrLavaLoba::compute_lobe_axes )
+        .def( "compute_descendent_lobe_position", &Flowy::MrLavaLoba::compute_descendent_lobe_position )
+        .def( "perturb_lobe_angle", &Flowy::MrLavaLoba::perturb_lobe_angle )
+        .def( "select_parent_lobe", &Flowy::MrLavaLoba::select_parent_lobe )
+        .def( "add_inertial_contribution", &Flowy::MrLavaLoba::add_inertial_contribution );
 
     m.def(
         "parse_config", &Flowy::Config::parse_config, "A function to parse input settings from a TOML file.",
         "config_path"_a );
+
+    m.def(
+        "validate_settings", &Flowy::Config::validate_settings, "A function to validate the Flowy config settings"_a );
 }
