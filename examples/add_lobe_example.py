@@ -10,17 +10,21 @@ lobe.center = [20, 10]
 
 extent = lobe.extent_xy()
 
-perimeter = np.array(lobe.rasterize_perimeter(30))
+perimeter = np.array(
+    [lobe.point_at_angle(phi) for phi in np.linspace(0, 2 * np.pi, 30, endpoint=True)]
+)
 
-x_data = np.linspace(0, 40, 40)
-y_data = np.linspace(0, 20, 20)
+x_data = np.linspace(0, 40, 40, endpoint=False)
+y_data = np.linspace(0, 20, 20, endpoint=False)
 height_data = np.zeros(shape=(len(x_data), len(y_data)))
 
 height_data = np.array(
     [[i + j for j in range(len(y_data))] for i in range(len(x_data))]
 )
 
-topography = pfy.flowycpp.Topography(height_data, x_data, y_data)
+topography = pfy.flowycpp.Topography(
+    height_data, x_data, y_data, pfy.flowycpp.DEFAULT_NO_DATA_VALUE_HEIGHT
+)
 
 for p in perimeter:
     print(topography.height_and_slope(p))
@@ -33,15 +37,20 @@ new_lobe.set_azimuthal_angle(0)
 new_lobe.thickness = 20
 new_lobe.center = [20, 10]
 new_lobe.semi_axes = [8, 2]
-new_lobe_perimeter = np.array(new_lobe.rasterize_perimeter(30))
+new_lobe_perimeter = np.array(
+    [
+        new_lobe.point_at_angle(phi)
+        for phi in np.linspace(0, 2 * np.pi, 30, endpoint=True)
+    ]
+)
 new_lobe_extent = new_lobe.extent_xy()
 
 
-topography.add_lobe(lobe, None)
-topography.add_lobe(new_lobe, None)
+topography.add_lobe(lobe, False, None)
+topography.add_lobe(new_lobe, False, None)
 
 cell = topography.cell_size()
-plt.pcolormesh(x_data+0.5*cell, y_data+0.5*cell, height_data.T)
+plt.pcolormesh(x_data + 0.5 * cell, y_data + 0.5 * cell, height_data.T)
 
 plt.axvline(lobe.center[0] + extent[0], color="black")
 plt.axvline(lobe.center[0] - extent[0], color="black")

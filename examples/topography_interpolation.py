@@ -3,12 +3,15 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 asc_file = pfy.flowycpp.AscFile("topo.asc")
-height_data = asc_file.height_data
+height_data = asc_file.data
 x_data = asc_file.x_data
 y_data = asc_file.y_data
 
 topography = pfy.flowycpp.Topography(
-    asc_file.height_data, asc_file.x_data, asc_file.y_data
+    asc_file.data,
+    asc_file.x_data,
+    asc_file.y_data,
+    pfy.flowycpp.DEFAULT_NO_DATA_VALUE_HEIGHT,
 )
 
 x_data_interp = np.linspace(np.min(x_data), np.max(x_data), 500)

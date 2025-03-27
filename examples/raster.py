@@ -19,15 +19,19 @@ lobe.center = [20, 10]
 
 extent = lobe.extent_xy()
 
-perimeter = np.array(lobe.rasterize_perimeter(30))
+perimeter = np.array(
+    [lobe.point_at_angle(phi) for phi in np.linspace(0, 2 * np.pi, 30, endpoint=True)]
+)
 
-x_data = np.linspace(0, 40, 40)
-y_data = np.linspace(0, 20, 20)
+x_data = np.linspace(0, 40, 40, endpoint=False)
+y_data = np.linspace(0, 20, 20, endpoint=False)
 height_data = np.zeros(shape=(len(x_data), len(y_data)))
 
 height_data = np.array([[0 for j in range(len(y_data))] for i in range(len(x_data))])
 
-topography = pfy.flowycpp.Topography(height_data, x_data, y_data)
+topography = pfy.flowycpp.Topography(
+    height_data, x_data, y_data, pfy.flowycpp.DEFAULT_NO_DATA_VALUE_HEIGHT
+)
 
 bbox = topography.bounding_box(lobe.center, extent[0], extent[1])
 

@@ -30,8 +30,10 @@ def plot_lines_intersect(x1, x2):
 
 # extent = lobe.extent_xy()
 
-perimeter = np.array(lobe.rasterize_perimeter(30))
 
+perimeter = np.array(
+    [lobe.point_at_angle(phi) for phi in np.linspace(0, 2 * np.pi, 30, endpoint=True)]
+)
 
 # Plot
 plt.plot(perimeter[:, 0], perimeter[:, 1], color="black")
