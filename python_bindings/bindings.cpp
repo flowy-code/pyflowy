@@ -9,6 +9,7 @@
 #include "flowy/include/topography_file.hpp"
 #include "pybind11/detail/common.h"
 #include "pybind11/pytypes.h"
+#include <random>
 
 #ifdef WITH_NETCDF
 #include "flowy/include/netcdf_file.hpp"
@@ -70,7 +71,7 @@ PYBIND11_MODULE( flowycpp, m )
 #ifdef WITH_NETCDF
     py::class_<Flowy::NetCDFFile>( m, "NetCDFFile" )
         .def( py::init<>() )
-        .def( py::init<Flowy::Topography, Flowy::OutputQuantitiy>() )
+        .def( py::init<Flowy::Topography, Flowy::OutputQuantity>() )
         .def( py::init<std::filesystem::path>(), "file_path"_a )
         .def( py::init<std::filesystem::path, Flowy::TopographyCrop>() )
         .def( "save", &Flowy::NetCDFFile::save )
@@ -111,6 +112,9 @@ PYBIND11_MODULE( flowycpp, m )
         .def( py::init<>() )
         .def_readwrite( "cells_intersecting", &Flowy::LobeCells::cells_intersecting )
         .def_readwrite( "cells_enclosed", &Flowy::LobeCells::cells_enclosed );
+
+    m.attr( "DEFAULT_NO_DATA_VALUE_HEIGHT" )    = py::float_( Flowy::DEFAULT_NO_DATA_VALUE_HEIGHT );
+    m.attr( "DEFAULT_NO_DATA_VALUE_THICKNESS" ) = py::float_( Flowy::DEFAULT_NO_DATA_VALUE_THICKNESS );
 
     py::class_<Flowy::Topography>( m, "Topography" )
         .def( py::init<>() )
@@ -240,6 +244,11 @@ PYBIND11_MODULE( flowycpp, m )
 
     m.def(
         "validate_settings", &Flowy::Config::validate_settings, "A function to validate the Flowy config settings"_a );
+
+    py::class_<std::mt19937>( m, "mt19937" )
+        .def( py::init<>() )
+        .def( py::init<int>() )
+        .def( "__call__", []( std::mt19937 & p ) { return p(); } );
 
     auto mr_lava_loba_m = m.def_submodule( "mr_lava_loba" );
     mr_lava_loba_m.def( "compute_initial_lobe_position", &Flowy::MrLavaLoba::compute_initial_lobe_position );
