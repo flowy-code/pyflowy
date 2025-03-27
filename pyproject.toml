@@ -1,6 +1,6 @@
 [project]
 name = "pyflowy"
-version = "0.0.1"
+version = "1.0.0"
 description = "Python bindings for flowy"
 authors = [
     {name = "Amrita Goswami", email = "amrita16thaug646@gmail.com"},

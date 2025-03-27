@@ -9,6 +9,7 @@
 #include "flowy/include/topography_file.hpp"
 #include "pybind11/detail/common.h"
 #include "pybind11/pytypes.h"
+#include <random>
 
 #ifdef WITH_NETCDF
 #include "flowy/include/netcdf_file.hpp"
@@ -70,7 +71,7 @@ PYBIND11_MODULE( flowycpp, m )
 #ifdef WITH_NETCDF
     py::class_<Flowy::NetCDFFile>( m, "NetCDFFile" )
         .def( py::init<>() )
-        .def( py::init<Flowy::Topography, Flowy::OutputQuantitiy>() )
+        .def( py::init<Flowy::Topography, Flowy::OutputQuantity>() )
         .def( py::init<std::filesystem::path>(), "file_path"_a )
         .def( py::init<std::filesystem::path, Flowy::TopographyCrop>() )
         .def( "save", &Flowy::NetCDFFile::save )
@@ -111,6 +112,9 @@ PYBIND11_MODULE( flowycpp, m )
         .def( py::init<>() )
         .def_readwrite( "cells_intersecting", &Flowy::LobeCells::cells_intersecting )
         .def_readwrite( "cells_enclosed", &Flowy::LobeCells::cells_enclosed );
+
+    m.attr( "DEFAULT_NO_DATA_VALUE_HEIGHT" )    = py::float_( Flowy::DEFAULT_NO_DATA_VALUE_HEIGHT );
+    m.attr( "DEFAULT_NO_DATA_VALUE_THICKNESS" ) = py::float_( Flowy::DEFAULT_NO_DATA_VALUE_THICKNESS );
 
     py::class_<Flowy::Topography>( m, "Topography" )
         .def( py::init<>() )
@@ -213,22 +217,26 @@ PYBIND11_MODULE( flowycpp, m )
         .def_readwrite( "max_semiaxis", &Flowy::CommonLobeDimensions::max_semiaxis )
         .def_readwrite( "thickness_min", &Flowy::CommonLobeDimensions::thickness_min );
 
+    py::enum_<Flowy::RunStatus>( m, "RunStatus" )
+        .value( "Finished", Flowy::RunStatus::Finished )
+        .value( "Ongoing", Flowy::RunStatus::Ongoing );
+
+    py::class_<Flowy::SimulationState>( m, "SimulationState" )
+        .def_readonly( "n_lobes_processed", &Flowy::SimulationState::n_lobes_processed )
+        .def_readonly( "n_lobes", &Flowy::SimulationState::n_lobes )
+        .def_readonly( "idx_flow", &Flowy::SimulationState::idx_flow )
+        .def_readonly( "idx_lobe", &Flowy::SimulationState::idx_lobe );
+
     py::class_<Flowy::Simulation>( m, "Simulation" )
         .def( py::init<Flowy::Config::InputParams, std::optional<int>>() )
         .def_readwrite( "input", &Flowy::Simulation::input )
         .def_readwrite( "topography", &Flowy::Simulation::topography )
         .def_readwrite( "lobes", &Flowy::Simulation::lobes )
+        .def( "reset_simulation_state", &Flowy::Simulation::reset_simulation_state )
+        .def( "get_simulation_state", &Flowy::Simulation::get_simulation_state )
         .def( "stop_condition", &Flowy::Simulation::stop_condition )
-        .def( "run", &Flowy::Simulation::run );
-
-    py::class_<Flowy::MrLavaLoba>( m, "MrLavaLoba" )
-        .def_readwrite( "lobe_dimensions", &Flowy::MrLavaLoba::lobe_dimensions )
-        .def( "compute_initial_lobe_position", &Flowy::MrLavaLoba::compute_initial_lobe_position )
-        .def( "compute_lobe_axes", &Flowy::MrLavaLoba::compute_lobe_axes )
-        .def( "compute_descendent_lobe_position", &Flowy::MrLavaLoba::compute_descendent_lobe_position )
-        .def( "perturb_lobe_angle", &Flowy::MrLavaLoba::perturb_lobe_angle )
-        .def( "select_parent_lobe", &Flowy::MrLavaLoba::select_parent_lobe )
-        .def( "add_inertial_contribution", &Flowy::MrLavaLoba::add_inertial_contribution );
+        .def( "run", &Flowy::Simulation::run )
+        .def( "steps", &Flowy::Simulation::steps );
 
     m.def(
         "parse_config", &Flowy::Config::parse_config, "A function to parse input settings from a TOML file.",
@@ -236,4 +244,17 @@ PYBIND11_MODULE( flowycpp, m )
 
     m.def(
         "validate_settings", &Flowy::Config::validate_settings, "A function to validate the Flowy config settings"_a );
+
+    py::class_<std::mt19937>( m, "mt19937" )
+        .def( py::init<>() )
+        .def( py::init<int>() )
+        .def( "__call__", []( std::mt19937 & p ) { return p(); } );
+
+    auto mr_lava_loba_m = m.def_submodule( "mr_lava_loba" );
+    mr_lava_loba_m.def( "compute_initial_lobe_position", &Flowy::MrLavaLoba::compute_initial_lobe_position );
+    mr_lava_loba_m.def( "compute_lobe_axes", &Flowy::MrLavaLoba::compute_lobe_axes );
+    mr_lava_loba_m.def( "compute_descendent_lobe_position", &Flowy::MrLavaLoba::compute_descendent_lobe_position );
+    mr_lava_loba_m.def( "perturb_lobe_angle", &Flowy::MrLavaLoba::perturb_lobe_angle );
+    mr_lava_loba_m.def( "select_parent_lobe", &Flowy::MrLavaLoba::select_parent_lobe );
+    mr_lava_loba_m.def( "add_inertial_contribution", &Flowy::MrLavaLoba::add_inertial_contribution );
 }
