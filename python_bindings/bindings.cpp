@@ -213,11 +213,23 @@ PYBIND11_MODULE( flowycpp, m )
         .def_readwrite( "max_semiaxis", &Flowy::CommonLobeDimensions::max_semiaxis )
         .def_readwrite( "thickness_min", &Flowy::CommonLobeDimensions::thickness_min );
 
+    py::enum_<Flowy::RunStatus>( m, "RunStatus" )
+        .value( "Finished", Flowy::RunStatus::Finished )
+        .value( "Ongoing", Flowy::RunStatus::Ongoing );
+
+    py::class_<Flowy::SimulationState>( m, "SimulationState" )
+        .def_readonly( "n_lobes_processed", &Flowy::SimulationState::n_lobes_processed )
+        .def_readonly( "n_lobes", &Flowy::SimulationState::n_lobes )
+        .def_readonly( "idx_flow", &Flowy::SimulationState::idx_flow )
+        .def_readonly( "idx_lobe", &Flowy::SimulationState::idx_lobe );
+
     py::class_<Flowy::Simulation>( m, "Simulation" )
         .def( py::init<Flowy::Config::InputParams, std::optional<int>>() )
         .def_readwrite( "input", &Flowy::Simulation::input )
         .def_readwrite( "topography", &Flowy::Simulation::topography )
         .def_readwrite( "lobes", &Flowy::Simulation::lobes )
+        .def( "reset_simulation_state", &Flowy::Simulation::reset_simulation_state )
+        .def( "get_simulation_state", &Flowy::Simulation::get_simulation_state )
         .def( "stop_condition", &Flowy::Simulation::stop_condition )
         .def( "run", &Flowy::Simulation::run )
         .def( "steps", &Flowy::Simulation::steps );
@@ -236,5 +248,4 @@ PYBIND11_MODULE( flowycpp, m )
     mr_lava_loba_m.def( "perturb_lobe_angle", &Flowy::MrLavaLoba::perturb_lobe_angle );
     mr_lava_loba_m.def( "select_parent_lobe", &Flowy::MrLavaLoba::select_parent_lobe );
     mr_lava_loba_m.def( "add_inertial_contribution", &Flowy::MrLavaLoba::add_inertial_contribution );
-
 }
