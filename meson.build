@@ -13,6 +13,10 @@ flowy_proj = subproject('flowy', default_options: ['default_library=static',
 flowylib = flowy_proj.get_variable('flowylib_static_dep')
 deps += [flowylib]
 
+if flowy_proj.get_variable('with_netcdf')
+  args += ['-DWITH_NETCDF']
+endif
+
 py = import('python').find_installation('python', modules: ['numpy'])
 deps += py.dependency()
 
